@@ -4,7 +4,7 @@
 #include <QStringListModel>
 #include <QSet>
 enum FoundStatus{eNone,eFound,eNotFound};
-enum LoadedStatus{eNoneStatus,eLoadind,eUpload,eError};
+enum LoadedStatus{eNoneStatus,eLoadind,eLoaded,eError};
 
 struct URL
 {

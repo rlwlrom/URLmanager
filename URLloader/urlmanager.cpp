@@ -1,5 +1,4 @@
 #include "urlmanager.h"
-#include "urlloader.h"
 #include "downloader.h"
 #include <QThread>
 
@@ -8,14 +7,14 @@ QString URL::getFoundStatus()
     QString strRet("");
     switch(eFoundFlag)
     {
-    case eNotFound:
-    {
-        strRet = "Not Found";break;
-    }
-    case eFound:
-    {
-        strRet = "Found";break;
-    }
+        case eNotFound:
+        {
+            strRet = "Not Found";break;
+        }
+        case eFound:
+        {
+            strRet = "Found";break;
+        }
     }
     return strRet;
 }
@@ -25,18 +24,18 @@ QString URL::getLoadedStatus()
     QString strRet("");
     switch(eStatus)
     {
-    case eLoadind:
-    {
-        strRet = "Loading...";break;
-    }
-    case eUpload:
-    {
-        strRet = "Upload";break;
-    }
-    case eError:
-    {
-        strRet = "Error";break;
-    }
+        case eLoadind:
+        {
+            strRet = "Loading...";break;
+        }
+        case eLoaded:
+        {
+            strRet = "Loaded";break;
+        }
+        case eError:
+        {
+            strRet = "Error";break;
+        }
     }
     return strRet;
 }
@@ -49,7 +48,7 @@ URLManager::URLManager(QString strURL, int MaxThread, int nMaxURL, QString strTe
 }
 void URLManager::addListItem(QString strURL)
 {
-    if(!LoadedURLset.contains(strURL))
+    if(!LoadedURLset.contains(strURL) && (URLlist.size() < nMaxURLCount))
     {
         qDebug()<<"from addListItem = "<<strURL;
         URLlist.append(URL(strURL));
@@ -59,7 +58,7 @@ void URLManager::addListItem(QString strURL)
 void URLManager::setUploadStatus(int nURLIndex)
 {
     qDebug()<<"from setUploadStatus = "<<nURLIndex;
-    URLlist[nURLIndex].eStatus = eUpload;
+    URLlist[nURLIndex].eStatus = eLoaded;
 }
 void URLManager::setFoundStatus(int nURLIndex, bool bFound)
 {

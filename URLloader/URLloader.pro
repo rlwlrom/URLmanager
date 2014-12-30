@@ -14,12 +14,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    urlloader.cpp \
     urlmanager.cpp \
     downloader.cpp
 
 HEADERS  += mainwindow.h \
-    urlloader.h \
     urlmanager.h \
     downloader.h
 
