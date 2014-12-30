@@ -1,0 +1,8 @@
+build-*
+build-*/*
+*.sdf
+*.user
+*.autosave
+*.suo
+*.pro.user.*
+
