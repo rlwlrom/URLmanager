@@ -3,7 +3,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
-#include <QtWebKitWidgets/QWebView>
 #include <QWaitCondition>
 #include <QMutex>
 

@@ -40,12 +40,24 @@ QString URL::getLoadedStatus()
     return strRet;
 }
 
-URLManager::URLManager(QString strURL, int MaxThread, int nMaxURL, QString strText):
-    nMaxThreadCount(MaxThread),nMaxURLCount(nMaxURL),strTextToSeach(strText)
+URLManager::URLManager(QObject *parent):
+    QObject(parent)
 {
+}
+
+void URLManager::setStart(QString strURL, int MaxThread, int nMaxURL, QString strText)
+{
+    nMaxThreadCount = MaxThread;
+    nMaxURLCount = nMaxURL;
+    strTextToSeach = strText;
+    URLlist.clear();
+    LoadedURLset.clear();
     URLlist.append(URL(strURL));
     nThreadCount = 0;
+    bStop = bPause = false;
+    nCurrentURLIndex=0;
 }
+
 void URLManager::addListItem(QString strURL)
 {
     if(!LoadedURLset.contains(strURL) && (URLlist.size() < nMaxURLCount))
@@ -69,6 +81,7 @@ void URLManager::setErrorStatus(int nURLIndex, QString strError)
 {
     qDebug()<<"from setErrorStatus = "<<nURLIndex <<"strError = "<<strError;
     URLlist[nURLIndex].eStatus = eError;
+    URLlist[nURLIndex].strErrorMsg = strError;
 }
 void URLManager::setLoadingStatus(int nURLIndex)
 {

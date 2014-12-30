@@ -9,11 +9,13 @@ enum LoadedStatus{eNoneStatus,eLoadind,eLoaded,eError};
 struct URL
 {
     QString strURL;
+    QString strErrorMsg;
     FoundStatus eFoundFlag;
     LoadedStatus eStatus;
     URL(QString str)
     {
         strURL = str;
+        strErrorMsg = QString ("");
         eFoundFlag = eNone;
         eStatus = eNoneStatus;
     }
@@ -24,12 +26,12 @@ class URLManager:public QObject
 {
     Q_OBJECT
 public:
-    explicit URLManager(QString strURL, int MaxThread, int nMaxURL, QString strText);
+    explicit URLManager(QObject *parent = 0);
     ~URLManager();
     void doWork();
     void setStop(){bStop = true;}
     void setPause(){bPause = true;}
-    void setStart(){bStop = bPause = false;nCurrentURLIndex=0;}
+    void setStart(QString strURL, int MaxThread, int nMaxURL, QString strText);
     QList<URL>* getURLlist(){return &URLlist;}
 signals:
     void stop();

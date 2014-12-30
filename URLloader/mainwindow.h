@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include "urlmanager.h"
-#include "downloader.h"
 #include <QTimer>
 #include <QStandardItemModel>
 
@@ -29,7 +28,7 @@ private slots:
 
 private:
     void UpdateTable();
-    void SetFirstURL();
+    void SetFirstURL(QString &strURL);
     void InitModel();
 
     Ui::MainWindow *ui;

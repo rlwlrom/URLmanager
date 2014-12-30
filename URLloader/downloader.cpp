@@ -1,6 +1,4 @@
 #include "downloader.h"
-#include <QtWebKit/QWebElement>
-#include <QtWebKitWidgets/QWebFrame>
 #include <QUrl>
 #include <QDebug>
 
@@ -14,9 +12,6 @@ Downloader::Downloader(QString str,int nIndex, QString strText, QObject *parent)
 
 void Downloader::doDownload()
 {
-    /*view = new QWebView();
-    connect(view, SIGNAL(loadFinished(bool)), this, SLOT(replyFinished(bool)));*/
-
 	qDebug()<<"from DownLoad";
     if (bPauseFlag)
     {
@@ -38,7 +33,7 @@ void Downloader::doDownload()
 
 void Downloader::restart()
 {
-    bPauseFlag = false;
+    bStopFlag = bPauseFlag = false;
     pause.wakeAll();
 }
 void Downloader::setStopFlag()
@@ -54,16 +49,17 @@ void Downloader::replyFinished (QNetworkReply *reply)
 {
     if(reply->error())
     {
-        qDebug() << "ERROR! Page was not loaded";
-        emit setErrorFlag(nURLIndex,"Error occurred");
-        qDebug() << reply->errorString();
+        qDebug() << "ERROR! " << reply->errorString();
+        emit setErrorFlag(nURLIndex,reply->errorString());
     }
     else
     {
-        QString strHTML = reply->readAll();
         emit setUploadFlag(nURLIndex);
+
+        QString strHTML = reply->readAll();
         bool bFound = strHTML.contains(strTextToSearch,Qt::CaseInsensitive);
         emit setFoundFlag(nURLIndex,bFound);
+
         QRegExp regexp1("<\\s*a([^>]+)>");
         QRegExp regexp2("href\\s*=\\s*[\\\"\\']?([^\\'\\\"]+)[\\'\\\"]?");
         QRegExp regexp3("(http://[^#]+)");
@@ -71,13 +67,11 @@ void Downloader::replyFinished (QNetworkReply *reply)
         int pos = 0;
         while ((pos = regexp1.indexIn(strHTML, pos)) != -1)
         {
-            if(regexp2.indexIn(regexp1.cap(1)) != -1)
+            if((regexp2.indexIn(regexp1.cap(1)) != -1)
+                    &&(regexp3.indexIn(regexp2.cap(1)) != -1))
             {
-                if (regexp3.indexIn(regexp2.cap(1)) != -1)
-                {
-                    QString strURL = regexp3.cap(1);
-                    emit newURLFound(strURL);
-                }
+               QString strURL = regexp3.cap(1);
+               emit newURLFound(strURL);
             }
             pos += regexp1.matchedLength();
         }

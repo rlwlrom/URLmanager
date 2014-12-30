@@ -9,20 +9,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    manager = NULL;
+    manager = new URLManager(this);
+
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(UpdateTableView()));
     timer->stop();
-    model = new QStandardItemModel(1,3,this); //1 Row and 3 Columns
+
+    model = new QStandardItemModel(1,3,this); //1 Row for first url and 3 Columns (URL,Loaded,Found)
     ui->tableView->setModel(model);
     InitModel();
+
     bPause = false;
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    if(manager!=NULL) delete manager;
 }
 
 void MainWindow::on_StartButton_clicked()
@@ -31,27 +33,24 @@ void MainWindow::on_StartButton_clicked()
     QString strURL = ui->URLEdit->text();
     int nMaxThreads = ui->MaxThreadSpin->value();
     int nURLCount = ui->MaxUrlCountSpin->value();
-    manager = new URLManager(strURL, nMaxThreads, nURLCount, strTextToSearch);
-    manager->setStart();
-    SetFirstURL();
+    manager->setStart(strURL, nMaxThreads, nURLCount, strTextToSearch);
+    SetFirstURL(strURL);
     timer->start(1000);
     UpdateTableView();
 }
 
 void MainWindow::on_StopButton_clicked()
 {
-  timer->stop();
-  if(manager!=NULL)
+    timer->stop();
     manager->setStop();
 }
 
 void MainWindow::on_PauseButton_clicked()
 {
-   bPause?timer->start():timer->stop();
-   if(manager!=NULL)
+    bPause?timer->start():timer->stop();
     manager->setPause();
-   ui->PauseButton->setText(bPause?"Pause":"Continue");
-   bPause = !bPause;
+    ui->PauseButton->setText(bPause?"Pause":"Continue");
+    bPause = !bPause;
 }
 
 void MainWindow::UpdateTable()
@@ -64,7 +63,14 @@ void MainWindow::UpdateTable()
         if(i<nRowCount)
         {
             model->setItem(i,1,new QStandardItem((*pList)[i].getLoadedStatus()));
-            model->setItem(i,2,new QStandardItem((*pList)[i].getFoundStatus()));
+            if(!(*pList)[i].strErrorMsg.isEmpty())
+            {
+                model->setItem(i,2,new QStandardItem((*pList)[i].strErrorMsg));
+            }
+            else
+            {
+                model->setItem(i,2,new QStandardItem((*pList)[i].getFoundStatus()));
+            }
         }
         else
         {
@@ -72,23 +78,20 @@ void MainWindow::UpdateTable()
             row.append(new QStandardItem((*pList)[i].strURL));
             row.append(new QStandardItem((*pList)[i].getLoadedStatus()));
             row.append(new QStandardItem((*pList)[i].getFoundStatus()));
-
             model->appendRow(row);
         }
     }
 }
 
-void MainWindow::SetFirstURL()
+void MainWindow::SetFirstURL(QString &strURL)
 {
-    QStandardItem* item = new QStandardItem(ui->URLEdit->text());
     InitModel();
-    model->setItem(0,0,item);
+    model->setItem(0,0,new QStandardItem(strURL));
 }
 
 void MainWindow::UpdateTableView()
 {
-    if(manager!=NULL)
-        manager->doWork();
+    manager->doWork();
     UpdateTable();
 }
 
