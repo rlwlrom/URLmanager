@@ -78,10 +78,12 @@ void URLManager::setLoadingStatus(int nURLIndex)
 void URLManager::increaseThreadCount()
 {
     ++nThreadCount;
+    qDebug()<<"URLManager::increaseThreadCount() nThreadCount = "<<nThreadCount;
 }
 void URLManager::decreaseThreadCount()
 {
     --nThreadCount;
+    qDebug()<<"URLManager::decreaseThreadCount() nThreadCount = "<<nThreadCount;
 }
 
 void URLManager::doWork()
@@ -94,13 +96,13 @@ void URLManager::doWork()
                 Downloader* worker = new Downloader(URLlist[i].strURL,i,strTextToSeach);
                 QThread *workerThread = new QThread;
                 worker->moveToThread(workerThread);
-                qDebug()<<"Create new worker";
+                increaseThreadCount();
+
                 connect(workerThread, SIGNAL(started()), worker, SLOT(doDownload()));
-                connect(workerThread, SIGNAL(started()), this, SLOT(increaseThreadCount()));
 
                 connect(workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
                 connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
-                connect(workerThread, SIGNAL(finished()), this, SLOT(decreaseThreadCount()));
+                connect(worker, SIGNAL(workFinished()), this, SLOT(decreaseThreadCount()));
 
                 connect(worker, SIGNAL(newURLFound(QString)), this, SLOT(addListItem(QString)));
                 connect(worker, SIGNAL(setFoundFlag(int,bool)), this, SLOT(setFoundStatus(int,bool)));
@@ -112,7 +114,7 @@ void URLManager::doWork()
                 connect(this, SIGNAL(pause()), worker, SLOT(setPauseFlag()));
                 connect(this, SIGNAL(restart()),worker, SLOT(restart()));
                 workerThread->start();
-                qDebug()<<workerThread;
+                qDebug()<<"Create new worker = "<<workerThread;
                 nCurrentURLIndex = i+1;
             }
         }

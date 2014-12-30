@@ -28,7 +28,6 @@ void Downloader::doDownload()
        return;
     }
     qDebug()<<strURL;
-    //view->load(QUrl(strURL));
     manager = new QNetworkAccessManager(this);
 
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
@@ -55,18 +54,14 @@ void Downloader::replyFinished (QNetworkReply *reply)
 {
     if(reply->error())
     {
-        qDebug() << "ERROR!";
-        qDebug()<<"Page was not loaded";
+        qDebug() << "ERROR! Page was not loaded";
         emit setErrorFlag(nURLIndex,"Error occurred");
         qDebug() << reply->errorString();
     }
     else
     {
         QString strHTML = reply->readAll();
-        qDebug() << strHTML;
-
         emit setUploadFlag(nURLIndex);
-
         bool bFound = strHTML.contains(strTextToSearch,Qt::CaseInsensitive);
         emit setFoundFlag(nURLIndex,bFound);
         QRegExp regexp1("<\\s*a([^>]+)>");
@@ -76,19 +71,16 @@ void Downloader::replyFinished (QNetworkReply *reply)
         int pos = 0;
         while ((pos = regexp1.indexIn(strHTML, pos)) != -1)
         {
-            qDebug()<<regexp1.cap(1);
             if(regexp2.indexIn(regexp1.cap(1)) != -1)
             {
                 if (regexp3.indexIn(regexp2.cap(1)) != -1)
                 {
                     QString strURL = regexp3.cap(1);
-                    qDebug()<<strURL;
                     emit newURLFound(strURL);
                 }
             }
             pos += regexp1.matchedLength();
         }
-
-
     }
+    emit workFinished();
 }

@@ -22,6 +22,7 @@ signals:
     void setUploadFlag(int nURLIndex);
     void setErrorFlag(int nURLIndex,QString nErrorMsg);
     void setLoadingStatus(int nURLIndex);
+    void workFinished();
 public slots:
     void doDownload();
     void replyFinished (QNetworkReply *reply);

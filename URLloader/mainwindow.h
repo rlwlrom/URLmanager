@@ -30,6 +30,8 @@ private slots:
 private:
     void UpdateTable();
     void SetFirstURL();
+    void InitModel();
+
     Ui::MainWindow *ui;
     URLManager* manager;
     QTimer *timer;

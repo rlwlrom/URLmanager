@@ -14,11 +14,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(timer,SIGNAL(timeout()),this,SLOT(UpdateTableView()));
     timer->stop();
     model = new QStandardItemModel(1,3,this); //1 Row and 3 Columns
-    model->setHorizontalHeaderItem(0, new QStandardItem(QString("URL")));
-    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Loaded")));
-    model->setHorizontalHeaderItem(2, new QStandardItem(QString("Found")));
-
     ui->tableView->setModel(model);
+    InitModel();
+    bPause = false;
 }
 
 MainWindow::~MainWindow()
@@ -63,7 +61,6 @@ void MainWindow::UpdateTable()
     int nURLCount = pList->size();
     for(int i=0;i<nURLCount;i++)
     {
-        qDebug()<<"From UpdateTable i = "<<i;
         if(i<nRowCount)
         {
             model->setItem(i,1,new QStandardItem((*pList)[i].getLoadedStatus()));
@@ -84,6 +81,7 @@ void MainWindow::UpdateTable()
 void MainWindow::SetFirstURL()
 {
     QStandardItem* item = new QStandardItem(ui->URLEdit->text());
+    InitModel();
     model->setItem(0,0,item);
 }
 
@@ -92,4 +90,12 @@ void MainWindow::UpdateTableView()
     if(manager!=NULL)
         manager->doWork();
     UpdateTable();
+}
+
+void MainWindow::InitModel()
+{
+    model->clear();
+    model->setHorizontalHeaderItem(0, new QStandardItem(QString("URL")));
+    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Loaded")));
+    model->setHorizontalHeaderItem(2, new QStandardItem(QString("Found")));
 }

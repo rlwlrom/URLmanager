@@ -119,7 +119,7 @@
      <item>
       <widget class="QLineEdit" name="URLEdit">
        <property name="text">
-        <string>http://www.example.com</string>
+        <string>http://qt-project.org/</string>
        </property>
       </widget>
      </item>
