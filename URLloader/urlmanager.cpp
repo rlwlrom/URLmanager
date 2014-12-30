@@ -9,9 +9,13 @@ QString URL::getFoundStatus()
     switch(eFoundFlag)
     {
     case eNotFound:
-        strRet = "Not Found";
+    {
+        strRet = "Not Found";break;
+    }
     case eFound:
-        strRet = "Found";
+    {
+        strRet = "Found";break;
+    }
     }
     return strRet;
 }
@@ -22,11 +26,17 @@ QString URL::getLoadedStatus()
     switch(eStatus)
     {
     case eLoadind:
-        strRet = "Loading...";
+    {
+        strRet = "Loading...";break;
+    }
     case eUpload:
-        strRet = "Upload";
+    {
+        strRet = "Upload";break;
+    }
     case eError:
-        strRet = "Error";
+    {
+        strRet = "Error";break;
+    }
     }
     return strRet;
 }
@@ -43,6 +53,7 @@ void URLManager::addListItem(QString strURL)
     {
         qDebug()<<"from addListItem = "<<strURL;
         URLlist.append(URL(strURL));
+        LoadedURLset.insert(strURL);
     }
 }
 void URLManager::setUploadStatus(int nURLIndex)
@@ -84,6 +95,7 @@ void URLManager::doWork()
                 Downloader* worker = new Downloader(URLlist[i].strURL,i,strTextToSeach);
                 QThread *workerThread = new QThread;
                 worker->moveToThread(workerThread);
+                qDebug()<<"Create new worker";
                 connect(workerThread, SIGNAL(started()), worker, SLOT(doDownload()));
                 connect(workerThread, SIGNAL(started()), this, SLOT(increaseThreadCount()));
 

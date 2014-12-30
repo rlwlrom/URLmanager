@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(UpdateTableView()));
     timer->stop();
-    QStandardItemModel *model = new QStandardItemModel(2,3,this); //2 Rows and 3 Columns
+    model = new QStandardItemModel(1,3,this); //1 Row and 3 Columns
     model->setHorizontalHeaderItem(0, new QStandardItem(QString("URL")));
     model->setHorizontalHeaderItem(1, new QStandardItem(QString("Loaded")));
     model->setHorizontalHeaderItem(2, new QStandardItem(QString("Found")));
@@ -35,6 +35,7 @@ void MainWindow::on_StartButton_clicked()
     int nURLCount = ui->MaxUrlCountSpin->value();
     manager = new URLManager(strURL, nMaxThreads, nURLCount, strTextToSearch);
     manager->setStart();
+    SetFirstURL();
     timer->start(1000);
     UpdateTableView();
 }

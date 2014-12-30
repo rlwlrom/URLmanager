@@ -71,17 +71,20 @@ void Downloader::replyFinished (QNetworkReply *reply)
         emit setFoundFlag(nURLIndex,bFound);
         QRegExp regexp1("<\\s*a([^>]+)>");
         QRegExp regexp2("href\\s*=\\s*[\\\"\\']?([^\\'\\\"]+)[\\'\\\"]?");
+        QRegExp regexp3("(http://[^#]+)");
         regexp2.setCaseSensitivity(Qt::CaseInsensitive);
         int pos = 0;
         while ((pos = regexp1.indexIn(strHTML, pos)) != -1)
         {
             qDebug()<<regexp1.cap(1);
-            if(regexp2.indexIn(regexp1.cap(1)))
+            if(regexp2.indexIn(regexp1.cap(1)) != -1)
             {
-                QString strURL = regexp2.cap(1);
-                qDebug()<<strURL;
-                if(strURL.startsWith("http://"))
-                     emit newURLFound(strURL);
+                if (regexp3.indexIn(regexp2.cap(1)) != -1)
+                {
+                    QString strURL = regexp3.cap(1);
+                    qDebug()<<strURL;
+                    emit newURLFound(strURL);
+                }
             }
             pos += regexp1.matchedLength();
         }
